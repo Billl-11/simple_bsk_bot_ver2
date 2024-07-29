@@ -37,7 +37,7 @@ if prompt:= st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response_message = utils.chat_completion_ollama(st.session_state.chat_history, tools_list)
+        response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
         tool_calls = response_message.tool_calls
 
         # tool call handling
