@@ -12,6 +12,11 @@ tools_list = ct.return_tools_list()
 
 st.title("Simple BSK chatbot")
 
+# st.sidebar
+model_option = st.sidebar.selectbox(
+    "Choose LLM Model",
+    ("OpenAI (API)", "Llama Groq (Local)"),
+)
 # chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -37,19 +42,31 @@ if prompt:= st.chat_input("What is up?"):
 
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
-        response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
+        if model_option == "OpenAI (API)":
+            with st.spinner('Thinking...'):
+                response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
+        else:
+            with st.spinner('Thinking...'):
+                response_message = utils.chat_completion_ollama(st.session_state.chat_history, tools_list)
         tool_calls = response_message.tool_calls
 
         # tool call handling
         if tool_calls:
+            st.toast('⚙️ A function was called!..')
             print('tool used')
             for tool_call in tool_calls:
                 tool_id, tool_name, tool_arguments, tool_params = utils.extract_tool_details(tool_call)
                 utils.add_tool_detail(st.session_state.chat_history, tool_id, tool_name, tool_arguments, tool_params)
                 tool_call_result = eval(f"ct.{tool_name}")(**tool_params)
                 utils.add_tool_response(st.session_state.chat_history, tool_id, tool_name, tool_call_result)
-                
-            response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
+            
+            if model_option == "OpenAI (API)":
+                with st.spinner('Thinking...'):
+                    response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
+            else:
+                with st.spinner('Thinking...'):
+                    response_message = utils.chat_completion_ollama(st.session_state.chat_history, tools_list)
+
             response_message = response_message.content
             st.markdown(response_message)
         else:

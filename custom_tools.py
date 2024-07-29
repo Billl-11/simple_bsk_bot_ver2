@@ -38,7 +38,7 @@ def return_tools_list():
                         "certification_type": {
                             "type": "string",
                             "description" : "The type of certification whose status is being checked. " \
-                              "Should be one of ['Hull_Inspection', 'Safety_Equipment', 'Environmental_Compliance', 'Crew_Training']",
+                              "Should be one of ['Hull_Inspection', 'Safety_Equipment', 'Environmental_Compliance', 'Crew_Training']. Ask user which one they would to know.",
                         }
                     },
                     "required": ["ship_name", "certification_type"],
