@@ -4,6 +4,7 @@ from openai import OpenAI
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import streamlit as st
+import tiktoken
 
 load_dotenv()
 
@@ -81,3 +82,8 @@ def chat_completion_ollama(chat_history, tools, model_name = "llama3-groq-tool-u
         )
     response_message = response.choices[0].message
     return response_message
+
+def num_tokens_from_string(string) -> int:
+    encoding = tiktoken.encoding_for_model("gpt-4o-mini")
+    num_tokens = len(encoding.encode(string))
+    return num_tokens

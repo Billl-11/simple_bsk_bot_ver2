@@ -10,7 +10,10 @@ import utils
 
 tools_list = ct.return_tools_list()
 
-st.title("Simple BSK chatbot")
+st.title("SEMAR (Smart Maritime Assistance)")
+
+input_token = 0
+output_token = 0
 
 # st.sidebar
 model_option = st.sidebar.selectbox(
@@ -26,8 +29,12 @@ if "chat_history" not in st.session_state:
 
 # Display chat messages from history
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    if message["role"] == 'assistant':
+        with st.chat_message(message["role"], avatar = 'logo_semar.jpg'):
+            st.markdown(message["content"])
+    else:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
 # Accept user input
 if prompt:= st.chat_input("What is up?"):
@@ -41,7 +48,7 @@ if prompt:= st.chat_input("What is up?"):
         st.markdown(prompt)
 
     # Display assistant response in chat message container
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar = 'logo_semar.jpg'):
         if model_option == "OpenAI (API)":
             with st.spinner('Thinking...'):
                 response_message = utils.chat_completion(st.session_state.chat_history, tools_list)
@@ -72,7 +79,10 @@ if prompt:= st.chat_input("What is up?"):
         else:
             response_message = response_message.content
             st.markdown(response_message)
-
+    
+    input_token = input_token + utils.num_tokens_from_string(prompt)
+    output_token = output_token + utils.num_tokens_from_string(response_message)    
+    
     # Add assistant response to chat history
     utils.add_ai_msg_string(st.session_state.chat_history, response_message)
     st.session_state.messages.append({"role": "assistant", "content": response_message})
